@@ -39,6 +39,7 @@ const ExportsSchema = z.union([
  */
 export const PackageJsonSchema = z.object({
   name: z.string().optional(),
+  description: z.string().optional(),
   version: z.string().optional(),
   exports: ExportsSchema.optional(),
   license: z.string().optional(),
@@ -192,6 +193,7 @@ export function createNodePackage(
 
       return {
         name: packageJson.name,
+        description: packageJson.description,
         version: packageJson.version,
         exports: normalizeExports(packageJson.exports),
         license: packageJson.license,
@@ -284,6 +286,12 @@ export function createNodePackage(
     },
 
     *getDescription(): Operation<string> {
+      // Prefer package.json description over README-inferred description
+      let manifest = yield* this.getManifest();
+      if (manifest.description) {
+        return manifest.description;
+      }
+      // Fall back to README-inferred description
       let readme = yield* this.getReadme();
       return yield* useDescription(readme);
     },

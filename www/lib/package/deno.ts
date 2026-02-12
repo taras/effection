@@ -101,6 +101,7 @@ export function createDenoPackage(
 
       return {
         name: denoJson.name,
+        description: undefined, // deno.json doesn't have description field
         version: denoJson.version,
         exports: normalizeExports(denoJson.exports),
         license: denoJson.license,
@@ -193,6 +194,12 @@ export function createDenoPackage(
     },
 
     *getDescription(): Operation<string> {
+      // Prefer manifest description over README-inferred description
+      let manifest = yield* this.getManifest();
+      if (manifest.description) {
+        return manifest.description;
+      }
+      // Fall back to README-inferred description
       let readme = yield* this.getReadme();
       return yield* useDescription(readme);
     },

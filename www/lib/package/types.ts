@@ -23,6 +23,9 @@ export interface PackageManifest {
   /** Package name (e.g., "@effectionx/process") */
   name?: string;
 
+  /** Package description for npm/AI discovery */
+  description?: string;
+
   /** Package version */
   version?: string;
 
