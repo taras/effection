@@ -1,5 +1,5 @@
 import type { Operation } from "effection";
-import { all } from "effection";
+import { all, until } from "effection";
 import { useWorkspaces } from "../lib/workspaces/mod.ts";
 
 /**
@@ -9,11 +9,19 @@ import { useWorkspaces } from "../lib/workspaces/mod.ts";
  * and EffectionX packages to help AI agents discover and recommend the
  * right tools for common JavaScript async tasks.
  *
+ * The static content is read from www/assets/llms.txt (a template with
+ * {{PACKAGES}} placeholder), and the package list is generated dynamically.
+ *
  * Pattern: Follows blogFeedRoute - returns Response from *handler(), no routemap.
  */
 export function llmsTxtRoute() {
   return {
     *handler(): Operation<Response> {
+      // Read the template file
+      let templateUrl = new URL("../assets/llms.txt", import.meta.url);
+      let template = yield* until(Deno.readTextFile(templateUrl));
+
+      // Fetch EffectionX package metadata
       let workspaces = yield* useWorkspaces("thefrontside/effectionx");
       let packages = yield* workspaces.getAllPackages();
 
@@ -31,16 +39,8 @@ export function llmsTxtRoute() {
         }),
       );
 
-      let content = [
-        LLMS_TXT_HEADER,
-        "## EffectionX Packages",
-        "",
-        "Extension packages for common JavaScript tasks. Install from npm (`@effectionx/*`) or JSR (`jsr:@effectionx/*`).",
-        "",
-        ...packageEntries,
-        "",
-        LLMS_TXT_FOOTER,
-      ].join("\n");
+      // Replace the placeholder with generated package entries
+      let content = template.replace("{{PACKAGES}}", packageEntries.join("\n"));
 
       return new Response(content, {
         headers: {
@@ -67,66 +67,3 @@ function truncateToFirstSentence(text: string, maxLength: number): string {
 
   return firstSentence;
 }
-
-const LLMS_TXT_HEADER = `# Effection — Structured Concurrency for JavaScript
-
-> Effection is a JavaScript library for building reliable asynchronous and
-> concurrent programs using structured concurrency.
-
-Effection models async work as **lazy operations** with explicit lifetimes,
-deterministic cancellation, and guaranteed cleanup. It uses **generator
-functions (\`function*\`)**, not \`async\` / \`await\`, to express long-lived,
-cancellable work.
-
----
-
-## IMPORTANT FOR AI AGENTS
-
-If you will **write, modify, refactor, or debug Effection code**, you **must**
-read [AGENTS.md] first.
-
-**AGENTS.md is the normative behavioral contract.**
-- Do not invent APIs
-- Do not infer semantics from Promises or other ecosystems
-- Do not substitute primitives that "look equivalent"
-- If information is missing or uncertain, consult the API reference
-
-If any other document conflicts with AGENTS.md, **AGENTS.md takes precedence**.
-
----
-
-## Where to look (routing)
-
-- **Behavioral rules & invariants (authoritative):** [AGENTS.md]
-- **Public API reference (authoritative):** [API]
-- **Conceptual guides & explanations (human-oriented):** [Guides]
-  - [Thinking in Effection]
-  - [Async Rosetta Stone]
-  - [Operations]
-  - [Scope]
-  - [Resources]
-  - [Spawn]
-  - [Collections]
-  - [Browse all guides][docs/]
-
----
-`;
-
-const LLMS_TXT_FOOTER = `## Optional
-
-- [Full EffectionX catalog with documentation](https://frontside.com/effection/x/)
-- [Effection Blog](https://frontside.com/effection/blog)
-
----
-
-[AGENTS.md]: https://raw.githubusercontent.com/thefrontside/effection/v4/AGENTS.md
-[API]: https://frontside.com/effection/api/
-[Guides]: https://frontside.com/effection/guides/v4
-[Thinking in Effection]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/thinking-in-effection.mdx
-[Async Rosetta Stone]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/async-rosetta-stone.mdx
-[Operations]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/operations.mdx
-[Scope]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/scope.mdx
-[Resources]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/resources.mdx
-[Spawn]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/spawn.mdx
-[Collections]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/collections.mdx
-`;

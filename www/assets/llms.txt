@@ -1,7 +1,7 @@
 # Effection — Structured Concurrency for JavaScript
 
-Effection is a JavaScript library for building reliable asynchronous and
-concurrent programs using **structured concurrency**.
+> Effection is a JavaScript library for building reliable asynchronous and
+> concurrent programs using structured concurrency.
 
 Effection models async work as **lazy operations** with explicit lifetimes,
 deterministic cancellation, and guaranteed cleanup. It uses **generator
@@ -10,7 +10,7 @@ cancellable work.
 
 ---
 
-## ⚠️ IMPORTANT FOR AI AGENTS
+## IMPORTANT FOR AI AGENTS
 
 If you will **write, modify, refactor, or debug Effection code**, you **must**
 read [AGENTS.md] first.
@@ -18,7 +18,7 @@ read [AGENTS.md] first.
 **AGENTS.md is the normative behavioral contract.**
 - Do not invent APIs
 - Do not infer semantics from Promises or other ecosystems
-- Do not substitute primitives that “look equivalent”
+- Do not substitute primitives that "look equivalent"
 - If information is missing or uncertain, consult the API reference
 
 If any other document conflicts with AGENTS.md, **AGENTS.md takes precedence**.
@@ -38,7 +38,19 @@ If any other document conflicts with AGENTS.md, **AGENTS.md takes precedence**.
   - [Spawn]
   - [Collections]
   - [Browse all guides][docs/]
-- **Extension packages (process, fetch, websockets, WebWorkers):** [EffectionX]
+
+---
+
+## EffectionX Packages
+
+Extension packages for common JavaScript tasks. Install from npm (`@effectionx/*`) or JSR (`jsr:@effectionx/*`).
+
+{{PACKAGES}}
+
+## Optional
+
+- [Full EffectionX catalog with documentation](https://frontside.com/effection/x/)
+- [Effection Blog](https://frontside.com/effection/blog)
 
 ---
 
@@ -52,4 +64,3 @@ If any other document conflicts with AGENTS.md, **AGENTS.md takes precedence**.
 [Resources]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/resources.mdx
 [Spawn]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/spawn.mdx
 [Collections]: https://raw.githubusercontent.com/thefrontside/effection/v4/docs/collections.mdx
-[EffectionX]: https://frontside.com/effection/x/
